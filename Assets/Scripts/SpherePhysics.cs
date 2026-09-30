@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class SpherePhysics : MonoBehaviour
+public class SpherePhysics : MonoBehaviour, ICollidable
 {
     public PlanePhysics thePlane;
     float d0;
@@ -75,5 +75,31 @@ public class SpherePhysics : MonoBehaviour
     float parallel_Distance(Vector3 v, Vector3 n)
     {
         return Vector3.Dot(v, n.normalized);
+    }
+
+    public bool CollidingWith(ICollidable collidable)
+    {
+        if (collidable is PlanePhysics)
+        { // code for sphere plane collision}
+            PlanePhysics physics = (PlanePhysics)collidable;
+
+        }
+
+        if (collidable is SpherePhysics)
+
+        {
+            // code for sphere / sphere
+            SpherePhysics physics = (SpherePhysics)collidable;
+
+        }
+
+
+    }
+
+
+
+    public void ResolveCollision(ICollidable collidable, ref Vector3 updatedPosition, ref Vector3 updatedVelocity)
+    {
+        throw new NotImplementedException();
     }
 }
