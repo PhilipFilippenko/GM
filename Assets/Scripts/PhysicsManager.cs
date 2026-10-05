@@ -11,26 +11,33 @@ public class PhysicsManager : MonoBehaviour
         allObjects = new List<ICollidable>();
 
         // code to fill list
+        foreach (MonoBehaviour mb in FindObjectsByType<MonoBehaviour>())
+            if (mb is ICollidable)
+                allObjects.Add((ICollidable)mb);
+    }
 
-
+    public void Register(ICollidable collidable)
+    {
+        allObjects.Add(collidable);
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-
+        allObjects.RemoveAll(o => (o as MonoBehaviour) == null);
 
         // check for collisions
 
-        for (int i = 0; i < allObjects.Count-1; i++)
-            for (int j =i+1; j< allObjects.Count; j++)
+        for (int i = 0; i < allObjects.Count - 1; i++)
+            for (int j = i + 1; j < allObjects.Count; j++)
             { // test for collision
-              if (allObjects[i].CollidingWith(allObjects[j]) )  {
+                if (allObjects[i].CollidingWith(allObjects[j]))
+                {
 
                     Vector3 newPositionj = Vector3.zero, newVelocityj = Vector3.zero;
                     allObjects[i].ResolveCollision(allObjects[j], ref newPositionj, ref newVelocityj);
                     allObjects[j].UpdatePositionandVelocity(newPositionj, newVelocityj);
                 }
-        }
+            }
     }
 }

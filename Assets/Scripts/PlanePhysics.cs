@@ -9,25 +9,26 @@ public class PlanePhysics : MonoBehaviour, ICollidable
 
     public bool CollidingWith(ICollidable collidable)
     {
-        throw new System.NotImplementedException();
+        if (collidable is SpherePhysics)
+            return collidable.CollidingWith(this);
+
+        return false;
     }
-
-
 
     public void ResolveCollision(ICollidable collidable, ref Vector3 updatedPosition, ref Vector3 updatedVelocity)
     {
-        throw new System.NotImplementedException();
+        if (collidable is SpherePhysics)
+        {
+            SpherePhysics sphere = (SpherePhysics)collidable;
+            Vector3 p = Vector3.zero, v = Vector3.zero;
+            sphere.ResolveCollision(this, ref p, ref v);
+
+            updatedPosition = sphere.transform.position;
+            updatedVelocity = sphere.Velocity;
+        }
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void UpdatePositionandVelocity(Vector3 newPosition, Vector3 newVelocity)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
