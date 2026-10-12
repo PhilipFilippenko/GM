@@ -1,169 +1,148 @@
-using System;
 using UnityEngine;
 
 public class SpherePhysics : MonoBehaviour, ICollidable
 {
-    float CoR = 0.8f;
-    public float mass = 1f;
+    // coefficient of restitution, 1 = perfect bounce
+    public float CoR = 0.8f;
+    public float friction = 1.5f;
+    public Vector3 velocity;
+
+    public SpherePhysics lastTouched;
+
+    static Vector3 gravity = new Vector3(0, -9.81f, 0);
+
+    // last frame, for the time of impact
+    Vector3 oldPosition;
+    Vector3 oldVelocity;
 
     public float Radius
     {
         get { return transform.localScale.x / 2f; }
-        set { transform.localScale = Vector3.one * value * 2f; }
     }
-
-    Vector3 velocity = Vector3.zero;
-    Vector3 acceleration = Vector3.zero;
-    Vector3 oldVelocity;
-    Vector3 oldPosition;
-
-    public Vector3 Velocity { get { return velocity; } }
 
     void Awake()
     {
         oldPosition = transform.position;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        print(transform.position);
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        float T = Time.deltaTime;
-        acceleration = new Vector3(0, -9.81f, 0);
-
-        oldVelocity = velocity;
         oldPosition = transform.position;
+        oldVelocity = velocity;
 
-        velocity += acceleration * T;
-        transform.position += velocity * T;
+        velocity += gravity * Time.deltaTime;
+        transform.position += velocity * Time.deltaTime;
     }
 
-    /// <summary>
-    /// Returns the magnitude of the parallel component of vector v parallel to n 
-    /// </summary>
-    /// <param name="v">Vector to be decomposed</param>
-    /// <param name="n">Unit vector parallel to above component</param>
-    /// <returns></returns>
-
-    float DistanceToPlane(Vector3 pos, PlanePhysics plane)
+    float DistanceToPlane(Vector3 position, PlanePhysics plane)
     {
-        return parallel_Distance(pos - plane.transform.position, plane.Normal) - Radius;
+        return Vector3.Dot(position - plane.transform.position, plane.Normal) - Radius;
     }
 
-    float DistanceToSphere(Vector3 pos, Vector3 otherPos, SpherePhysics other)
+    float DistanceToSphere(Vector3 position, Vector3 otherPosition, SpherePhysics other)
     {
-        return Vector3.Distance(pos, otherPos) - (Radius + other.Radius);
+        return Vector3.Distance(position, otherPosition) - (Radius + other.Radius);
     }
 
-    float parallel_Distance(Vector3 v, Vector3 n)
+    float ImpactTime(float d0, float d1)
     {
-        return Vector3.Dot(v, n.normalized);
+        return Mathf.Clamp(d0 / (d0 - d1), 0f, 1f) * Time.deltaTime;
     }
 
-    public bool CollidingWith(ICollidable collidable)
+    public bool CollidingWith(ICollidable other)
     {
-        if (collidable is PlanePhysics)
-        { // code for sphere plane collision}
-            PlanePhysics physics = (PlanePhysics)collidable;
-
-            float d0 = DistanceToPlane(oldPosition, physics);
-            float d1 = DistanceToPlane(transform.position, physics);
-
-            return d1 < 0 && d0 > 0;
+        if (other is PlanePhysics)
+        {
+            PlanePhysics plane = (PlanePhysics)other;
+            return DistanceToPlane(transform.position, plane) < 0 && Vector3.Dot(velocity, plane.Normal) < 0;
         }
 
-        if (collidable is SpherePhysics)
-
+        if (other is SpherePhysics)
         {
-            // code for sphere / sphere
-            SpherePhysics physics = (SpherePhysics)collidable;
-
-            float d0 = DistanceToSphere(oldPosition, physics.oldPosition, physics);
-            float d1 = DistanceToSphere(transform.position, physics.transform.position, physics);
-
-            return d1 < 0 && d0 >= 0;
+            SpherePhysics ball = (SpherePhysics)other;
+            return DistanceToSphere(transform.position, ball.transform.position, ball) < 0;
         }
 
         return false;
     }
 
-    public void ResolveCollision(ICollidable collidable, ref Vector3 updatedPosition, ref Vector3 updatedVelocity)
+    public void ResolveCollision(ICollidable other)
     {
-        float T = Time.deltaTime;
-
-        if (collidable is PlanePhysics)
+        if (other is PlanePhysics)
         {
-            PlanePhysics physics = (PlanePhysics)collidable;
-            Vector3 n = physics.Normal.normalized;
+            PlanePhysics plane = (PlanePhysics)other;
+            Vector3 n = plane.Normal;
 
-            float d0 = DistanceToPlane(oldPosition, physics);
-            float d1 = DistanceToPlane(transform.position, physics);
+            // rewind to the moment of impact
+            float d0 = DistanceToPlane(oldPosition, plane);
+            float d1 = DistanceToPlane(transform.position, plane);
+            float t = ImpactTime(d0, d1);
+            Vector3 p = oldPosition + oldVelocity * t;
+            Vector3 v = oldVelocity + gravity * t;
 
-            float vDrop = (d1 - d0) / T;
-            float tImpact = -d0 / vDrop;
+            v -= (1 + CoR) * Vector3.Dot(v, n) * n;
 
-            Vector3 vImpact = oldVelocity + acceleration * tImpact;
-            Vector3 pImpact = oldPosition + velocity * tImpact;
+            Vector3 sliding = v - Vector3.Dot(v, n) * n;
+            v -= sliding * Mathf.Min(1f, friction * Time.deltaTime);
 
-            Vector3 vParallel = Vector3.Dot(vImpact, n) * n;
-            Vector3 vPerp = vImpact - vParallel;
-            Vector3 vImpactOut = vPerp - CoR * vParallel;
+            FinishFrame(p, v, t);
 
-            float tRemaining = T - tImpact;
-            velocity = vImpactOut + acceleration * tRemaining;
-            transform.position = pImpact + velocity * tRemaining;
-
-            updatedPosition = physics.transform.position;
-            updatedVelocity = Vector3.zero;
+            // push out so resting balls don't sink
+            float d = DistanceToPlane(transform.position, plane);
+            if (d < 0)
+                transform.position -= d * n;
         }
 
-        if (collidable is SpherePhysics)
+        if (other is SpherePhysics)
         {
-            SpherePhysics other = (SpherePhysics)collidable;
+            SpherePhysics ball = (SpherePhysics)other;
+            Vector3 between = ball.transform.position - transform.position;
 
-            float d0 = DistanceToSphere(oldPosition, other.oldPosition, other);
-            float d1 = DistanceToSphere(transform.position, other.transform.position, other);
+            if (Vector3.Dot(velocity - ball.velocity, between) > 0)
+                Bounce(ball);
 
-            float vDrop = (d1 - d0) / T;
-            float tImpact = -d0 / vDrop;
-
-            Vector3 p1 = oldPosition + velocity * tImpact;
-            Vector3 p2 = other.oldPosition + other.velocity * tImpact;
-            Vector3 v1 = oldVelocity + acceleration * tImpact;
-            Vector3 v2 = other.oldVelocity + other.acceleration * tImpact;
-
-            Vector3 n = (p2 - p1).normalized;
-
-            float u1 = Vector3.Dot(v1, n);
-            float u2 = Vector3.Dot(v2, n);
-            Vector3 v1Perp = v1 - u1 * n;
-            Vector3 v2Perp = v2 - u2 * n;
-
-            float m1 = mass, m2 = other.mass;
-            float u1Out = ((m1 - m2) / (m1 + m2)) * u1 + (2 * m2 / (m1 + m2)) * u2;
-            float u2Out = ((m2 - m1) / (m1 + m2)) * u2 + (2 * m1 / (m1 + m2)) * u1;
-
-            Vector3 v1Out = CoR * u1Out * n + v1Perp;
-            Vector3 v2Out = CoR * u2Out * n + v2Perp;
-
-            float tRemaining = T - tImpact;
-
-            velocity = v1Out + acceleration * tRemaining;
-            transform.position = p1 + velocity * tRemaining;
-
-            updatedVelocity = v2Out + other.acceleration * tRemaining;
-            updatedPosition = p2 + updatedVelocity * tRemaining;
+            // push apart so balls don't get stuck
+            float overlap = -DistanceToSphere(transform.position, ball.transform.position, ball);
+            if (overlap > 0)
+            {
+                Vector3 n = (ball.transform.position - transform.position).normalized;
+                transform.position -= n * overlap / 2f;
+                ball.transform.position += n * overlap / 2f;
+            }
         }
     }
 
-    public void UpdatePositionandVelocity(Vector3 newPosition, Vector3 newVelocity)
+    void Bounce(SpherePhysics ball)
     {
-        transform.position = newPosition;
-        velocity = newVelocity;
+        float d0 = DistanceToSphere(oldPosition, ball.oldPosition, ball);
+        float d1 = DistanceToSphere(transform.position, ball.transform.position, ball);
+        float t = ImpactTime(d0, d1);
+        Vector3 p1 = oldPosition + oldVelocity * t;
+        Vector3 p2 = ball.oldPosition + ball.oldVelocity * t;
+        Vector3 v1 = oldVelocity + gravity * t;
+        Vector3 v2 = ball.oldVelocity + gravity * t;
+
+        // same mass, so they swap speed along the line between them
+        Vector3 n = (p2 - p1).normalized;
+        float push = (1 + CoR) / 2f * Vector3.Dot(v1 - v2, n);
+        v1 -= push * n;
+        v2 += push * n;
+
+        FinishFrame(p1, v1, t);
+        ball.FinishFrame(p2, v2, t);
+
+        lastTouched = ball;
+        ball.lastTouched = this;
+    }
+
+    void FinishFrame(Vector3 impactPosition, Vector3 impactVelocity, float impactTime)
+    {
+        float timeLeft = Time.deltaTime - impactTime;
+        velocity = impactVelocity + gravity * timeLeft;
+        transform.position = impactPosition + velocity * timeLeft;
+
+        // so another collision this frame doesn't undo the bounce
+        oldVelocity = impactVelocity - gravity * impactTime;
+        oldPosition = impactPosition - oldVelocity * impactTime;
     }
 }

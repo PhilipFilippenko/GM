@@ -3,41 +3,30 @@ using UnityEngine;
 
 public class PhysicsManager : MonoBehaviour
 {
+    List<ICollidable> objects = new List<ICollidable>();
 
-    List<ICollidable> allObjects;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    // planes go last so balls never end up inside a wall
+    void Awake()
     {
-        allObjects = new List<ICollidable>();
-
-        // code to fill list
         foreach (MonoBehaviour mb in FindObjectsByType<MonoBehaviour>())
             if (mb is ICollidable)
-                allObjects.Add((ICollidable)mb);
+                objects.Add((ICollidable)mb);
+
+        objects.Sort((a, b) => (a is PlanePhysics).CompareTo(b is PlanePhysics));
     }
 
     public void Register(ICollidable collidable)
     {
-        allObjects.Add(collidable);
+        objects.Insert(0, collidable);
     }
 
-    // Update is called once per frame
     void LateUpdate()
     {
-        allObjects.RemoveAll(o => (o as MonoBehaviour) == null);
+        objects.RemoveAll(o => (MonoBehaviour)o == null);
 
-        // check for collisions
-
-        for (int i = 0; i < allObjects.Count - 1; i++)
-            for (int j = i + 1; j < allObjects.Count; j++)
-            { // test for collision
-                if (allObjects[i].CollidingWith(allObjects[j]))
-                {
-
-                    Vector3 newPositionj = Vector3.zero, newVelocityj = Vector3.zero;
-                    allObjects[i].ResolveCollision(allObjects[j], ref newPositionj, ref newVelocityj);
-                    allObjects[j].UpdatePositionandVelocity(newPositionj, newVelocityj);
-                }
-            }
+        for (int i = 0; i < objects.Count - 1; i++)
+            for (int j = i + 1; j < objects.Count; j++)
+                if (objects[i].CollidingWith(objects[j]))
+                    objects[i].ResolveCollision(objects[j]);
     }
 }

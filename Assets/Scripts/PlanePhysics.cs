@@ -7,28 +7,16 @@ public class PlanePhysics : MonoBehaviour, ICollidable
         get { return transform.up; }
     }
 
-    public bool CollidingWith(ICollidable collidable)
+    public bool CollidingWith(ICollidable other)
     {
-        if (collidable is SpherePhysics)
-            return collidable.CollidingWith(this);
-
+        if (other is SpherePhysics)
+            return other.CollidingWith(this);
         return false;
     }
 
-    public void ResolveCollision(ICollidable collidable, ref Vector3 updatedPosition, ref Vector3 updatedVelocity)
+    public void ResolveCollision(ICollidable other)
     {
-        if (collidable is SpherePhysics)
-        {
-            SpherePhysics sphere = (SpherePhysics)collidable;
-            Vector3 p = Vector3.zero, v = Vector3.zero;
-            sphere.ResolveCollision(this, ref p, ref v);
-
-            updatedPosition = sphere.transform.position;
-            updatedVelocity = sphere.Velocity;
-        }
-    }
-
-    public void UpdatePositionandVelocity(Vector3 newPosition, Vector3 newVelocity)
-    {
+        if (other is SpherePhysics)
+            other.ResolveCollision(this);
     }
 }
