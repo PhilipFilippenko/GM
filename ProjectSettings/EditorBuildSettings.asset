@@ -6,7 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/balls_colliding.unity
+    path: Assets/BallPhysics/Scenes/balls_colliding.unity
     guid: c6f37a1fdc702594b8993be6b68e5518
+  - enabled: 1
+    path: Assets/Animation/Scenes/BossAnimation.unity
+    guid: 448c0ceff088b5d41bec1f961071b9d0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
