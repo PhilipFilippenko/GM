@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 206913263}
   m_Layer: 0
-  m_Name: IKTestArea
+  m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -268,11 +268,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &323531837 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4582277379452294679, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
-  m_PrefabInstance: {fileID: 325453531}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &325453531
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1271,10 +1266,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1040134483}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
       insertIndex: -1
@@ -1287,7 +1279,7 @@ PrefabInstance:
       addedObject: {fileID: 1390586224}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1390586226}
+      addedObject: {fileID: 1390586228}
   m_SourcePrefab: {fileID: 100100000, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
 --- !u!1 &598663517
 GameObject:
@@ -1401,7 +1393,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 598663517}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1040134482
+--- !u!1 &722089590
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1409,38 +1401,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1040134483}
-  - component: {fileID: 1040134485}
-  - component: {fileID: 1040134484}
+  - component: {fileID: 722089593}
+  - component: {fileID: 722089592}
+  - component: {fileID: 722089591}
   m_Layer: 0
-  m_Name: ReachTarget
+  m_Name: LookTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1040134483
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1040134482}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.48, y: 1.8, z: 0.82}
-  m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1390586221}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &1040134484
+--- !u!23 &722089591
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1040134482}
+  m_GameObject: {fileID: 722089590}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -1468,7 +1445,7 @@ MeshRenderer:
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
   m_ReceiveGI: 1
-  m_PreserveUVs: 1
+  m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
@@ -1483,14 +1460,29 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &1040134485
+--- !u!33 &722089592
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1040134482}
+  m_GameObject: {fileID: 722089590}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &722089593
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 722089590}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.5, y: 1.7, z: 2.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1178932296
 GameObject:
   m_ObjectHideFlags: 0
@@ -1504,7 +1496,7 @@ GameObject:
   - component: {fileID: 1178932299}
   - component: {fileID: 1178932298}
   m_Layer: 0
-  m_Name: StepTop
+  m_Name: Step5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1764,7 +1756,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 499085918cfb940448bf96dc56a590d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VesselAnimationEvents
---- !u!114 &1390586226
+--- !u!114 &1390586228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1773,13 +1765,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1390586219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99f9698834ad7c94899c38363a911ea9, type: 3}
+  m_Script: {fileID: 11500000, guid: 0643f85d65c0e524eb2b6a45feca9824, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TwoBoneIK
-  upper: {fileID: 323531837}
-  lower: {fileID: 1682794375}
-  end: {fileID: 2104496046}
-  target: {fileID: 1040134483}
+  m_EditorClassIdentifier: Assembly-CSharp::HeadLookAt
+  target: {fileID: 722089593}
+  maxAngle: 70
 --- !u!1 &1559469434
 GameObject:
   m_ObjectHideFlags: 0
@@ -1892,11 +1882,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1559469434}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &1682794375 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2838391200542782613, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
-  m_PrefabInstance: {fileID: 325453531}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1724660842
 GameObject:
   m_ObjectHideFlags: 0
@@ -2243,11 +2228,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowCamera
   target: {fileID: 1390586221}
   offset: {x: 0, y: 2.5, z: -5}
---- !u!4 &2104496046 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2412161367050800168, guid: 500c34d06e1a8bd4f845b0cc93cbf5c3, type: 3}
-  m_PrefabInstance: {fileID: 325453531}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2257,3 +2237,4 @@ SceneRoots:
   - {fileID: 269086586}
   - {fileID: 325453531}
   - {fileID: 206913263}
+  - {fileID: 722089593}
