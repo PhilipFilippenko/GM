@@ -1,20 +1,24 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-// Keeps the camera behind and above a target, smoothing position and look direction.
 public class FollowCamera : MonoBehaviour
 {
     public Transform target;
-    public Vector3 offset = new Vector3(0f, 14f, -26f);
-    public float lookHeight = 9f;
-    public float smoothTime = 0.25f;
+    public Vector3 offset = new Vector3(0f, 2.5f, -5f);
 
     Vector3 velocity;
+    float angle;
 
     void LateUpdate()
     {
-        if (target == null) return;
-        Vector3 desired = target.TransformPoint(offset);
-        transform.position = Vector3.SmoothDamp(transform.position, desired, ref velocity, smoothTime);
-        transform.rotation = Quaternion.LookRotation(target.position + Vector3.up * lookHeight - transform.position);
+        if (Mouse.current.rightButton.isPressed)
+            angle += Mouse.current.delta.ReadValue().x * 0.2f;
+
+        Vector3 rotatedOffset = Quaternion.Euler(0f, angle, 0f) * offset;
+        Vector3 cameraPosition = target.position + rotatedOffset;
+        transform.position = Vector3.SmoothDamp(transform.position, cameraPosition, ref velocity, 0.25f);
+
+        Vector3 chest = target.position + Vector3.up * 1.4f;
+        transform.LookAt(chest);
     }
 }
